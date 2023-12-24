@@ -1,10 +1,16 @@
-package main
+package app
 
 import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
+
+func CheckIfItsURL(s string) bool {
+	_, err := url.ParseRequestURI(s)
+	return err == nil
+}
 
 func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {

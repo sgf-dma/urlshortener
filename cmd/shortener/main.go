@@ -1,20 +1,15 @@
 package main
 
 import (
+	"github.com/Vla8islav/urlshortener/internal/app"
 	"net/http"
-	"net/url"
 )
-
-func CheckIfItsURL(s string) bool {
-	_, err := url.ParseRequestURI(s)
-	return err == nil
-}
 
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", RootPageHandler)
-	mux.HandleFunc("/geturl/", IDHandler)
+	mux.HandleFunc("/", app.RootPageHandler)
+	mux.HandleFunc("/geturl/", app.IDHandler)
 
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
