@@ -9,17 +9,14 @@ import (
 
 var shortenedUrls = map[string]string{}
 
-func generateShortenedUrl() string {
+func generateShortenedURL() string {
 	return "http://localhost:8080/" +
 		GenerateString(len("EwHXdJfB"), "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 }
 
-func checkIfItsUrl(s string) bool {
+func checkIfItsURL(s string) bool {
 	_, err := url.Parse(s)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func RootPageHandler(res http.ResponseWriter, req *http.Request) {
@@ -28,7 +25,7 @@ func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if "text/plain" != req.Header.Get("Content-Type") {
+	if req.Header.Get("Content-Type") != "text/plain" {
 		http.Error(res, "Content type must be text/plain", http.StatusBadRequest)
 		return
 	}
@@ -39,20 +36,20 @@ func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, "Failed to read the request body", http.StatusInternalServerError)
 	}
 	bodyString := string(body)
-	if !checkIfItsUrl(bodyString) {
+	if !checkIfItsURL(bodyString) {
 		http.Error(res, "Incorrect url format", http.StatusBadRequest)
 	}
-	shortenedUrl, alreadyShortenedUrl := shortenedUrls[bodyString]
-	if !alreadyShortenedUrl {
-		shortenedUrl := generateShortenedUrl()
-		shortenedUrls[bodyString] = shortenedUrl
+	_, alreadyShortenedURL := shortenedUrls[bodyString]
+	if !alreadyShortenedURL {
+		shortenedURL := generateShortenedURL()
+		shortenedUrls[bodyString] = shortenedURL
 		res.WriteHeader(http.StatusCreated)
 	}
 
-	shortenedUrl, _ = shortenedUrls[bodyString]
+	shortenedURL := shortenedUrls[bodyString]
 	res.Header().Add("Content-Type", "text/plain")
-	res.Header().Add("Content-Length", fmt.Sprintf("%d", len(shortenedUrl)))
-	res.Write([]byte(shortenedUrl))
+	res.Header().Add("Content-Length", fmt.Sprintf("%d", len(shortenedURL)))
+	res.Write([]byte(shortenedURL))
 }
 
 func main() {
