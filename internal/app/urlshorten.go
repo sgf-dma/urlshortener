@@ -2,13 +2,11 @@ package app
 
 import (
 	"github.com/Vla8islav/urlshortener/internal/app/helpers"
+	"github.com/Vla8islav/urlshortener/internal/app/storage"
 	"net/url"
 	"regexp"
 	"strings"
 )
-
-var urlToShort = map[string]string{}
-var shortToURL = map[string]string{}
 
 const AllowedSymbolsInShortnedURL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const GeneratedShortenedURLSample = "EwHXdJfB"
@@ -18,19 +16,17 @@ func GetShortenedURL(urlToShorten string) string {
 	if err != nil {
 		return ""
 	}
-	urlToShort[urlToShorten] = shortenedURL
-	shortToURL[shortenedURL] = urlToShorten
-
+	storage.AddURLPair(shortenedURL, urlToShorten)
 	return shortenedURL
 }
 
 func GetFullURL(shortenedPostfix string) string {
-	fullPath, err := url.JoinPath("http://localhost:8080/", shortenedPostfix)
+	fullSortURL, err := url.JoinPath("http://localhost:8080/", shortenedPostfix)
 	if err != nil {
 		return ""
 	}
-
-	return shortToURL[fullPath]
+	longURL, _ := storage.GetFullURL(fullSortURL)
+	return longURL
 }
 
 func GenerateShortenedURL() (string, error) {
