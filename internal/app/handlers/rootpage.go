@@ -14,7 +14,7 @@ func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if req.Header.Get("Content-Type") != "text/plain" {
+	if req.Header.Get("Content-Type") != "text/plain; charset=utf-8" {
 		http.Error(res, "Content type must be text/plain", http.StatusBadRequest)
 		return
 	}
