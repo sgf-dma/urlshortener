@@ -7,14 +7,7 @@ import (
 	"net/url"
 )
 
-var shortenedUrls = map[string]string{}
-
-func generateShortenedURL() string {
-	return "http://localhost:8080/" +
-		GenerateString(len("EwHXdJfB"), "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-}
-
-func checkIfItsURL(s string) bool {
+func CheckIfItsURL(s string) bool {
 	_, err := url.Parse(s)
 	return err == nil
 }
@@ -34,28 +27,53 @@ func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		http.Error(res, "Failed to read the request body", http.StatusInternalServerError)
+		return
+
 	}
 	bodyString := string(body)
-	if !checkIfItsURL(bodyString) {
+	if !CheckIfItsURL(bodyString) {
 		http.Error(res, "Incorrect url format", http.StatusBadRequest)
-	}
-	_, alreadyShortenedURL := shortenedUrls[bodyString]
-	if !alreadyShortenedURL {
-		shortenedURL := generateShortenedURL()
-		shortenedUrls[bodyString] = shortenedURL
-		res.WriteHeader(http.StatusCreated)
+		return
 	}
 
-	shortenedURL := shortenedUrls[bodyString]
+	shortenedURL := GetShortenedURL(bodyString)
+
+	res.WriteHeader(http.StatusCreated)
 	res.Header().Add("Content-Type", "text/plain")
 	res.Header().Add("Content-Length", fmt.Sprintf("%d", len(shortenedURL)))
 	res.Write([]byte(shortenedURL))
 }
 
+func IdHandler(res http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		http.Error(res, "Only GET requests are allowed to /{id}", http.StatusBadRequest)
+		return
+	}
+
+	if req.Header.Get("Content-Type") != "text/plain" {
+		http.Error(res, "Content type must be text/plain", http.StatusBadRequest)
+		return
+	}
+
+	uri := req.RequestURI
+	if MatchesGeneratedUrlFormat(uri) {
+		fullUrl := GetFullURL(uri)
+		if len(fullUrl) > 0 {
+			res.WriteHeader(http.StatusTemporaryRedirect)
+			res.Write([]byte(fullUrl))
+		} else {
+			http.Error(res, "Url not found", http.StatusNotFound)
+		}
+	} else {
+		http.Error(res, "Invalid url format", http.StatusBadRequest)
+	}
+}
+
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", RootPageHandler)
+	mux.HandleFunc("/shorten/", RootPageHandler)
+	mux.HandleFunc("/", IdHandler)
 
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
