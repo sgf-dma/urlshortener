@@ -44,7 +44,7 @@ func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte(shortenedURL))
 }
 
-func IdHandler(res http.ResponseWriter, req *http.Request) {
+func IDHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		http.Error(res, "Only GET requests are allowed to /{id}", http.StatusBadRequest)
 		return
@@ -56,11 +56,11 @@ func IdHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	uri := req.RequestURI
-	if MatchesGeneratedUrlFormat(uri) {
-		fullUrl := GetFullURL(uri)
-		if len(fullUrl) > 0 {
+	if MatchesGeneratedURLFormat(uri) {
+		fullURL := GetFullURL(uri)
+		if len(fullURL) > 0 {
 			res.WriteHeader(http.StatusTemporaryRedirect)
-			res.Write([]byte(fullUrl))
+			res.Write([]byte(fullURL))
 		} else {
 			http.Error(res, "Url not found", http.StatusNotFound)
 		}
@@ -73,7 +73,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/shorten/", RootPageHandler)
-	mux.HandleFunc("/", IdHandler)
+	mux.HandleFunc("/", IDHandler)
 
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {

@@ -10,7 +10,7 @@ var urlToShort = map[string]string{}
 var shortToURL = map[string]string{}
 
 const AllowedSymbolsInShortnedURL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const GeneratedShortenedUrlSample = "EwHXdJfB"
+const GeneratedShortenedURLSample = "EwHXdJfB"
 
 func GetShortenedURL(urlToShorten string) string {
 	shortenedURL, err := GenerateShortenedURL()
@@ -34,15 +34,15 @@ func GetFullURL(shortenedPostfix string) string {
 
 func GenerateShortenedURL() (string, error) {
 	fullPath, err := url.JoinPath("http://localhost:8080/",
-		GenerateString(len(GeneratedShortenedUrlSample), AllowedSymbolsInShortnedURL))
+		GenerateString(len(GeneratedShortenedURLSample), AllowedSymbolsInShortnedURL))
 	if err != nil {
 		return fullPath, err
 	}
 	return fullPath, nil
 }
 
-func MatchesGeneratedUrlFormat(s string) bool {
+func MatchesGeneratedURLFormat(s string) bool {
 	s = strings.Trim(s, "/")
 	r, _ := regexp.Compile("^[" + AllowedSymbolsInShortnedURL + "]+$")
-	return len(s) == len(GeneratedShortenedUrlSample) && r.MatchString(s)
+	return len(s) == len(GeneratedShortenedURLSample) && r.MatchString(s)
 }
