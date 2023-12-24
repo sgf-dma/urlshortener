@@ -1,16 +1,12 @@
-package app
+package handlers
 
 import (
 	"fmt"
+	"github.com/Vla8islav/urlshortener/internal/app"
+	"github.com/Vla8islav/urlshortener/internal/app/helpers"
 	"io"
 	"net/http"
-	"net/url"
 )
-
-func CheckIfItsURL(s string) bool {
-	_, err := url.ParseRequestURI(s)
-	return err == nil
-}
 
 func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
@@ -31,12 +27,12 @@ func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 
 	}
 	bodyString := string(body)
-	if !CheckIfItsURL(bodyString) {
+	if !helpers.CheckIfItsURL(bodyString) {
 		http.Error(res, "Incorrect url format", http.StatusBadRequest)
 		return
 	}
 
-	shortenedURL := GetShortenedURL(bodyString)
+	shortenedURL := app.GetShortenedURL(bodyString)
 
 	res.WriteHeader(http.StatusCreated)
 	res.Header().Add("Content-Type", "text/plain")
@@ -56,8 +52,8 @@ func IDHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	uri := req.RequestURI
-	if MatchesGeneratedURLFormat(uri) {
-		fullURL := GetFullURL(uri)
+	if app.MatchesGeneratedURLFormat(uri) {
+		fullURL := app.GetFullURL(uri)
 		if len(fullURL) > 0 {
 			res.WriteHeader(http.StatusTemporaryRedirect)
 			res.Write([]byte(fullURL))

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/Vla8islav/urlshortener/internal/app/helpers"
 	"net/url"
 	"regexp"
 	"strings"
@@ -34,7 +35,7 @@ func GetFullURL(shortenedPostfix string) string {
 
 func GenerateShortenedURL() (string, error) {
 	fullPath, err := url.JoinPath("http://localhost:8080/",
-		GenerateString(len(GeneratedShortenedURLSample), AllowedSymbolsInShortnedURL))
+		helpers.GenerateString(len(GeneratedShortenedURLSample), AllowedSymbolsInShortnedURL))
 	if err != nil {
 		return fullPath, err
 	}
