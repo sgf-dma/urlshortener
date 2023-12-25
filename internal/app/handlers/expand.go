@@ -1,30 +1,29 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/Vla8islav/urlshortener/internal/app"
 	"net/http"
 )
 
-func IDHandler(res http.ResponseWriter, req *http.Request) {
+func ExpandHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		http.Error(res, "Only GET requests are allowed to /{id}", http.StatusBadRequest)
 		return
 	}
 
-	//if req.Header.Get("Content-Type") != "text/plain; charset=utf-8" {
-	//	http.Error(res, "Content type must be text/plain", http.StatusBadRequest)
-	//	return
-	//}
-
 	uri := req.RequestURI
 	if app.MatchesGeneratedURLFormat(uri) {
-		fullURL := app.GetFullURL(uri)
-		if len(fullURL) > 0 {
-			res.WriteHeader(http.StatusTemporaryRedirect)
+		fullURL, err := app.GetFullURL(uri)
+
+		if err == nil {
 			res.Header().Add("Location", fullURL)
-			//res.Write([]byte(fullURL))
+			res.WriteHeader(http.StatusTemporaryRedirect)
+		} else if errors.Is(err, app.ErrURLNotFound) {
+			http.Error(res, "URL not found", http.StatusNotFound)
 		} else {
-			http.Error(res, "Url not found", http.StatusNotFound)
+			http.Error(res, "problem occured while extracting URL: "+err.Error(), http.StatusInternalServerError)
+			return
 		}
 	} else {
 		http.Error(res, "Invalid url format", http.StatusBadRequest)

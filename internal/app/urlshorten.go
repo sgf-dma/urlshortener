@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"github.com/Vla8islav/urlshortener/internal/app/helpers"
 	"github.com/Vla8islav/urlshortener/internal/app/storage"
 	"net/url"
@@ -20,13 +21,19 @@ func GetShortenedURL(urlToShorten string) string {
 	return shortenedURL
 }
 
-func GetFullURL(shortenedPostfix string) string {
+var ErrURLNotFound = errors.New("couldn't find a requested URL")
+
+func GetFullURL(shortenedPostfix string) (string, error) {
 	fullSortURL, err := url.JoinPath("http://localhost:8080/", shortenedPostfix)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	longURL, _ := storage.GetFullURL(fullSortURL)
-	return longURL
+	longURL, found := storage.GetFullURL(fullSortURL)
+	if found {
+		return longURL, nil
+	} else {
+		return longURL, ErrURLNotFound
+	}
 }
 
 func GenerateShortenedURL() (string, error) {
