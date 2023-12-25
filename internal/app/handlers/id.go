@@ -21,7 +21,8 @@ func IDHandler(res http.ResponseWriter, req *http.Request) {
 		fullURL := app.GetFullURL(uri)
 		if len(fullURL) > 0 {
 			res.WriteHeader(http.StatusTemporaryRedirect)
-			res.Write([]byte(fullURL))
+			res.Header().Add("Location", fullURL)
+			//res.Write([]byte(fullURL))
 		} else {
 			http.Error(res, "Url not found", http.StatusNotFound)
 		}
