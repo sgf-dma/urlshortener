@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -11,14 +12,17 @@ import (
 
 func TestRootPageHandler(t *testing.T) {
 	type expectedResult struct {
-		code int
+		code        int
+		contentType string
 	}
 
 	validRequest := httptest.NewRequest(http.MethodPost, "/", nil)
 	validRequest.Header = http.Header{
-		"Content-Type": []string{"text/plain"},
+		"Content-Type": []string{"text/plain; charset=utf-8"},
 	}
 	validRequest.Body = io.NopCloser(strings.NewReader("http://ya.ru"))
+
+	getRequest := httptest.NewRequest(http.MethodGet, "/", nil)
 
 	testDataArray := []struct {
 		name    string
@@ -28,7 +32,14 @@ func TestRootPageHandler(t *testing.T) {
 		{
 			name:    "Successful link generation",
 			request: validRequest,
-			want:    expectedResult{code: 201},
+			want: expectedResult{
+				code: 201,
+			},
+		},
+		{
+			name:    "Successful link generation",
+			request: getRequest,
+			want:    expectedResult{code: 400},
 		},
 	}
 
@@ -44,13 +55,13 @@ func TestRootPageHandler(t *testing.T) {
 			assert.Equal(t, testData.want.code, res.StatusCode)
 			// получаем и проверяем тело запроса
 			defer res.Body.Close()
-			//resBody, err := io.ReadAll(res.Body)
-			//
-			//require.NoError(t, err)
-			//if w.Code >= 200 && w.Code <= 299 {
-			//	assert.JSONEq(t, testData.want.response, string(resBody))
-			//	assert.Equal(t, testData.want.contentType, res.Header.Get("Content-Type"))
-			//}
+			resBody, err := io.ReadAll(res.Body)
+
+			require.NoError(t, err)
+			if w.Code >= 200 && w.Code <= 299 {
+				assert.Regexp(t, "http://localhost:8080/[a-zA-Z]{8}", string(resBody))
+				assert.Equal(t, testData.want.contentType, res.Header.Get("Content-Type"))
+			}
 
 		})
 	}
