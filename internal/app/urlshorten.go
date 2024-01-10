@@ -17,18 +17,20 @@ func GetShortenedURL(urlToShorten string) string {
 	if err != nil {
 		return ""
 	}
-	storage.AddURLPair(shortenedURL, urlToShorten)
+	s := storage.GetInstance()
+	s.AddURLPair(shortenedURL, urlToShorten)
 	return shortenedURL
 }
 
 var ErrURLNotFound = errors.New("couldn't find a requested URL")
 
 func GetFullURL(shortenedPostfix string) (string, error) {
+	s := storage.GetInstance()
 	fullSortURL, err := url.JoinPath("http://localhost:8080/", shortenedPostfix)
 	if err != nil {
 		return "", err
 	}
-	longURL, found := storage.GetFullURL(fullSortURL)
+	longURL, found := s.GetFullURL(fullSortURL)
 	if found {
 		return longURL, nil
 	} else {

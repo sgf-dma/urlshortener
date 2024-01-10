@@ -6,6 +6,10 @@ import (
 	"net/http"
 )
 
+type Handlers interface {
+	ExpandHandler(res http.ResponseWriter, req *http.Request)
+}
+
 func ExpandHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		http.Error(res, "Only GET requests are allowed to /{id}", http.StatusBadRequest)
