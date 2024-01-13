@@ -3,18 +3,19 @@ package configuration
 import "flag"
 
 type Options struct {
-	ServerPort       uint
+	ServerAddress    string
 	ShortenerBaseUrl string
 }
 
-func ReadFlags() Options {
-	var serverPort uint
-	flag.UintVar(&serverPort, "a", 8080, "port on which the server should run")
-	var shortenerBaseUrl string
-	flag.StringVar(&shortenerBaseUrl, "b", "http://localhost:8080/", "specify base url")
-	flag.Parse()
-	return Options{
-		ServerPort:       serverPort,
-		ShortenerBaseUrl: shortenerBaseUrl,
+var instance *Options
+
+func ReadFlags() *Options {
+	if instance == nil {
+		opt := Options{}
+		flag.StringVar(&opt.ServerAddress, "a", "localhost:8889", "port on which the server should run")
+		flag.StringVar(&opt.ShortenerBaseUrl, "b", "http://localhost:8000", "base url for shortened links")
+		flag.Parse()
+		instance = &opt
 	}
+	return instance
 }

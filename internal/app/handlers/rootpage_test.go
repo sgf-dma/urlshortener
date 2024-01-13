@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/Vla8islav/urlshortener/internal/app/configuration"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -58,8 +59,9 @@ func TestRootPageHandler(t *testing.T) {
 			resBody, err := io.ReadAll(res.Body)
 
 			require.NoError(t, err)
+			regexToValidateTheLink := strings.TrimRight(configuration.ReadFlags().ShortenerBaseUrl, "/") + "/[a-zA-Z]{8}"
 			if w.Code >= 200 && w.Code <= 299 {
-				assert.Regexp(t, "http://localhost:8080/[a-zA-Z]{8}", string(resBody))
+				assert.Regexp(t, regexToValidateTheLink, string(resBody))
 				assert.Equal(t, testData.want.contentType, res.Header.Get("Content-Type"))
 			}
 

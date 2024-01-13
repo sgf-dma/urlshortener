@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/Vla8islav/urlshortener/internal/app/configuration"
 	"io"
 	"net/http"
 	"net/url"
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-	endpoint := "http://localhost:8080/"
+	endpoint := fmt.Sprintf("http://localhost:%d", configuration.ReadFlags().ServerAddress)
 	// контейнер данных для запроса
 	data := url.Values{}
 	// приглашение в консоли
