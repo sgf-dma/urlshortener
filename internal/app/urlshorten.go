@@ -14,13 +14,19 @@ const AllowedSymbolsInShortnedURL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQ
 const GeneratedShortenedURLSample = "EwHXdJfB"
 
 func GetShortenedURL(urlToShorten string) string {
-	shortenedURL, err := GenerateShortenedURL()
-	if err != nil {
-		return ""
-	}
 	s := storage.GetInstance()
-	s.AddURLPair(shortenedURL, urlToShorten)
-	return shortenedURL
+	shortenedUrl := ""
+	if existingShortenedURL, alreadyExist := s.GetShortenedURL(urlToShorten); alreadyExist {
+		shortenedUrl = existingShortenedURL
+	} else {
+		newShortenedURL, err := GenerateShortenedURL()
+		if err != nil {
+			return ""
+		}
+		s.AddURLPair(newShortenedURL, urlToShorten)
+		shortenedUrl = newShortenedURL
+	}
+	return shortenedUrl
 }
 
 var ErrURLNotFound = errors.New("couldn't find a requested URL")
