@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	endpoint := fmt.Sprintf("http://localhost:%d", configuration.ReadFlags().ServerAddress)
+	endpoint := fmt.Sprintf("http://localhost:%s", configuration.ReadFlags().ServerAddress)
 	// контейнер данных для запроса
 	data := url.Values{}
 	// приглашение в консоли

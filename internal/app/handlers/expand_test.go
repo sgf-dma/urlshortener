@@ -49,10 +49,10 @@ func TestExpandHandler(t *testing.T) {
 			ExpandHandler(w, testData.request())
 
 			res := w.Result()
-			// проверяем код ответа
-			assert.Equal(t, testData.want.code, res.StatusCode)
 			// получаем и проверяем тело запроса
 			defer res.Body.Close()
+			// проверяем код ответа
+			assert.Equal(t, testData.want.code, res.StatusCode)
 			//resBody, err := io.ReadAll(res.Body)
 			//
 			//require.NoError(t, err)

@@ -15,25 +15,25 @@ const GeneratedShortenedURLSample = "EwHXdJfB"
 
 func GetShortenedURL(urlToShorten string) string {
 	s := storage.GetInstance()
-	shortenedUrl := ""
+	shortenedURL := ""
 	if existingShortenedURL, alreadyExist := s.GetShortenedURL(urlToShorten); alreadyExist {
-		shortenedUrl = existingShortenedURL
+		shortenedURL = existingShortenedURL
 	} else {
 		newShortenedURL, err := GenerateShortenedURL()
 		if err != nil {
 			return ""
 		}
 		s.AddURLPair(newShortenedURL, urlToShorten)
-		shortenedUrl = newShortenedURL
+		shortenedURL = newShortenedURL
 	}
-	return shortenedUrl
+	return shortenedURL
 }
 
 var ErrURLNotFound = errors.New("couldn't find a requested URL")
 
 func GetFullURL(shortenedPostfix string) (string, error) {
 	s := storage.GetInstance()
-	fullSortURL, err := url.JoinPath(configuration.ReadFlags().ShortenerBaseUrl, shortenedPostfix)
+	fullSortURL, err := url.JoinPath(configuration.ReadFlags().ShortenerBaseURL, shortenedPostfix)
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +46,7 @@ func GetFullURL(shortenedPostfix string) (string, error) {
 }
 
 func GenerateShortenedURL() (string, error) {
-	fullPath, err := url.JoinPath(configuration.ReadFlags().ShortenerBaseUrl,
+	fullPath, err := url.JoinPath(configuration.ReadFlags().ShortenerBaseURL,
 		helpers.GenerateString(len(GeneratedShortenedURLSample), AllowedSymbolsInShortnedURL))
 	if err != nil {
 		return fullPath, err

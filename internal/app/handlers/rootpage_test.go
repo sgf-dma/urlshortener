@@ -59,7 +59,7 @@ func TestRootPageHandler(t *testing.T) {
 			resBody, err := io.ReadAll(res.Body)
 
 			require.NoError(t, err)
-			regexToValidateTheLink := strings.TrimRight(configuration.ReadFlags().ShortenerBaseUrl, "/") + "/[a-zA-Z]{8}"
+			regexToValidateTheLink := strings.TrimRight(configuration.ReadFlags().ShortenerBaseURL, "/") + "/[a-zA-Z]{8}"
 			if w.Code >= 200 && w.Code <= 299 {
 				assert.Regexp(t, regexToValidateTheLink, string(resBody))
 				assert.Equal(t, testData.want.contentType, res.Header.Get("Content-Type"))
