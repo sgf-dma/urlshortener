@@ -25,3 +25,5 @@ vendor/
 # statictest and other binaries
 
 .tools
+
+.*.sw*
