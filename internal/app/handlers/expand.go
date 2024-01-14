@@ -3,14 +3,11 @@ package handlers
 import (
 	"errors"
 	"github.com/Vla8islav/urlshortener/internal/app"
+	"github.com/Vla8islav/urlshortener/internal/app/storage"
 	"net/http"
 )
 
-type Handlers interface {
-	ExpandHandler(res http.ResponseWriter, req *http.Request)
-}
-
-func ExpandHandler(res http.ResponseWriter, req *http.Request) {
+func ExpandHandler(s storage.MakeshiftStorage, res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		http.Error(res, "Only GET requests are allowed to /{id}", http.StatusBadRequest)
 		return
@@ -18,7 +15,7 @@ func ExpandHandler(res http.ResponseWriter, req *http.Request) {
 
 	uri := req.RequestURI
 	if app.MatchesGeneratedURLFormat(uri) {
-		fullURL, err := app.GetFullURL(uri)
+		fullURL, err := app.GetFullURL(s, uri)
 
 		if err == nil {
 			res.Header().Add("Location", fullURL)

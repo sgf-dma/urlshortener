@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/Vla8islav/urlshortener/internal/app"
 	"github.com/Vla8islav/urlshortener/internal/app/helpers"
+	"github.com/Vla8islav/urlshortener/internal/app/storage"
 	"io"
 	"net/http"
 )
 
-func RootPageHandler(res http.ResponseWriter, req *http.Request) {
+func RootPageHandler(s storage.MakeshiftStorage, res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		http.Error(res, "Only POST requests are allowed to /", http.StatusBadRequest)
 		return
@@ -32,7 +33,7 @@ func RootPageHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	shortenedURL := app.GetShortenedURL(bodyString)
+	shortenedURL := app.GetShortenedURL(s, bodyString)
 
 	res.WriteHeader(http.StatusCreated)
 	res.Header().Add("Content-Type", "text/plain")

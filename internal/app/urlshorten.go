@@ -13,8 +13,7 @@ import (
 const AllowedSymbolsInShortnedURL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const GeneratedShortenedURLSample = "EwHXdJfB"
 
-func GetShortenedURL(urlToShorten string) string {
-	s := storage.GetInstance()
+func GetShortenedURL(s storage.MakeshiftStorage, urlToShorten string) string {
 	shortenedURL := ""
 	if existingShortenedURL, alreadyExist := s.GetShortenedURL(urlToShorten); alreadyExist {
 		shortenedURL = existingShortenedURL
@@ -31,8 +30,7 @@ func GetShortenedURL(urlToShorten string) string {
 
 var ErrURLNotFound = errors.New("couldn't find a requested URL")
 
-func GetFullURL(shortenedPostfix string) (string, error) {
-	s := storage.GetInstance()
+func GetFullURL(s storage.MakeshiftStorage, shortenedPostfix string) (string, error) {
 	fullSortURL, err := url.JoinPath(configuration.ReadFlags().ShortenerBaseURL, shortenedPostfix)
 	if err != nil {
 		return "", err

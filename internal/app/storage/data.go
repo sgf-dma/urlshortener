@@ -1,18 +1,9 @@
 package storage
 
-import "sync"
-
-var instance *makeshiftStorage = nil
-
-func GetInstance() MakeshiftStorage {
-	sync.OnceFunc(func() {
-		if instance == nil {
-			instance = new(makeshiftStorage)
-			instance.urlToShort = make(map[string]string)
-			instance.shortToURL = make(map[string]string)
-		}
-	})()
-
+func NewInstance() MakeshiftStorage {
+	instance := new(makeshiftStorage)
+	instance.urlToShort = make(map[string]string)
+	instance.shortToURL = make(map[string]string)
 	return instance
 }
 
@@ -26,6 +17,8 @@ type makeshiftStorage struct {
 	urlToShort map[string]string
 	shortToURL map[string]string
 }
+
+var _ MakeshiftStorage = makeshiftStorage{}
 
 func (s makeshiftStorage) AddURLPair(shortenedURL string, fullURL string) {
 	s.urlToShort[fullURL] = shortenedURL
